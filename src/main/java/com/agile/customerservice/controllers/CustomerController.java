@@ -1,6 +1,8 @@
 package com.agile.customerservice.controllers;
 
+import org.hibernate.annotations.NotFound;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,9 +31,12 @@ public class CustomerController {
 	}
 	
 	@GetMapping("/api/customer/{name}")
-	public ResponseEntity<Customer> customer(@PathVariable String name) {	
+	public ResponseEntity<Customer> customer(@PathVariable String name) throws NotFoundException {	
 		Customer customer = customerService.getCustomer(name);
-		return ResponseEntity.ok(customer);
+		
+		if(customer != null)
+			return ResponseEntity.ok(customer);
+		return ResponseEntity.notFound().build();
 	}
 	
 	@PostMapping("/api/customer/buycredit")
